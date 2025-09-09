@@ -188,8 +188,8 @@ export default function Home() {
         <Card className="shadow-lg overflow-hidden">
           {/* Card Header */}
           <div className="bg-gradient-to-r from-primary to-blue-600 px-6 py-8 text-center">
-            <h2 className="text-2xl font-bold text-primary-foreground mb-2">Phone Number Account Status</h2>
-            <p className="text-primary-foreground/80">Enter a phone number to check its account status using EnStream API</p>
+            <h2 className="text-2xl font-bold text-primary-foreground mb-2">Account Integrity Analysis</h2>
+            <p className="text-primary-foreground/80">Enter a phone number to get a comprehensive account integrity report with risk assessment, service history, and carrier information</p>
           </div>
 
           {/* Form Section */}
