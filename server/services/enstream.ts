@@ -28,6 +28,7 @@ export async function getAccountStatusByMsisdn(params: {
   const requestId = params.requestId ?? crypto.randomUUID();
 
   const auth = Buffer.from(`${username}:${password}`).toString("base64");
+  console.log(`Authentication - Username: ${username}, Auth header: Basic ${auth}`);
 
   const res = await fetch(`${BASE_URL}${PATH}`, {
     method: "POST",
