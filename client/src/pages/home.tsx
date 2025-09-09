@@ -108,6 +108,31 @@ export default function Home() {
     return result.sourceData?.accountStatus === "SUSPENDED" || result.isTerminated === true;
   };
 
+  // Helper function to determine if account has too many issues (shows X instead of check)
+  const hasHighRiskIssues = (result: AccountStatusResponse) => {
+    // Account is suspended or terminated
+    if (result.sourceData?.accountStatus === "SUSPENDED" || result.isTerminated === true) {
+      return true;
+    }
+    
+    // Very low integrity index (below 30)
+    if (result.integrityIndex !== undefined && result.integrityIndex < 30) {
+      return true;
+    }
+
+    // High frequency of service changes (suspicious activity)
+    if (result.sourceData?.recentServiceChangeFreq) {
+      const freq = result.sourceData.recentServiceChangeFreq;
+      const totalChanges = freq.accountChangeReactivationFreq + freq.accountChangeSuspensionFreq + 
+                          freq.deviceChangeFreq + freq.simChangeFreq + freq.phoneNumberChangeFreq;
+      if (totalChanges > 5) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   // Get theme colors based on account status
   const getAccountTheme = (result: AccountStatusResponse) => {
     if (isAccountProblematic(result)) {
@@ -293,12 +318,17 @@ export default function Home() {
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
                   <div className={`w-10 h-10 ${resultTheme.iconBg} rounded-full flex items-center justify-center`}>
-                    <Check className="text-white w-5 h-5" />
+                    {hasHighRiskIssues(result) ? (
+                      <X className="text-white w-5 h-5" />
+                    ) : (
+                      <Check className="text-white w-5 h-5" />
+                    )}
                   </div>
                 </div>
                 <div className="flex-1">
                   <h3 className={`text-lg font-semibold ${resultTheme.textPrimary} mb-4`}>
-                    {isAccountProblematic(result) ? "Account Status Alert" : "Account Integrity Report"}
+                    {hasHighRiskIssues(result) ? "High Risk Account Alert" : 
+                     isAccountProblematic(result) ? "Account Status Alert" : "Account Integrity Report"}
                   </h3>
                   
                   {/* Key Metrics */}
