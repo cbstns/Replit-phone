@@ -47,7 +47,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         consentGranted,
         responseCode: result.responseCode.toString(),
         responseMessage: result.responseMessage,
-        accountStatus: result.accountStatus,
+        accountStatus: result.sourceData?.accountStatus,
+        integrityIndex: result.integrityIndex?.toString(),
+        accountTenure: result.accountTenure?.toString(),
+        isTerminated: result.isTerminated,
+        carrierName: result.sourceData?.carrierName,
+        accountType: result.sourceData?.accountType,
       });
 
       // Return enhanced response

@@ -18,6 +18,11 @@ export const phoneQueries = pgTable("phone_queries", {
   responseCode: text("response_code"),
   responseMessage: text("response_message"),
   accountStatus: text("account_status"),
+  integrityIndex: text("integrity_index"),
+  accountTenure: text("account_tenure"),
+  isTerminated: boolean("is_terminated"),
+  carrierName: text("carrier_name"),
+  accountType: text("account_type"),
   timestamp: timestamp("timestamp").defaultNow().notNull(),
 });
 
