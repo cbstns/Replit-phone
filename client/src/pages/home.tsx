@@ -264,47 +264,155 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-green-900 mb-2">Account Found</h3>
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <Card className="bg-white border-green-200">
-                        <CardContent className="p-3">
-                          <p className="text-xs font-medium text-green-600 uppercase tracking-wide">Phone Number</p>
-                          <p className="text-sm font-mono text-green-900">{result.phoneNumber}</p>
-                        </CardContent>
-                      </Card>
-                      <Card className="bg-white border-green-200">
-                        <CardContent className="p-3">
-                          <p className="text-xs font-medium text-green-600 uppercase tracking-wide">Account Status</p>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 mt-1">
-                            <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
-                            {result.accountStatus}
-                          </span>
-                        </CardContent>
-                      </Card>
-                      <Card className="bg-white border-green-200">
-                        <CardContent className="p-3">
-                          <p className="text-xs font-medium text-green-600 uppercase tracking-wide">Response Code</p>
-                          <p className="text-sm font-mono text-green-900">{result.responseCode}</p>
-                        </CardContent>
-                      </Card>
-                    </div>
+                  <h3 className="text-lg font-semibold text-green-900 mb-4">Account Integrity Report</h3>
+                  
+                  {/* Key Metrics */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <Card className="bg-white border-green-200">
-                      <CardContent className="p-3">
-                        <p className="text-xs font-medium text-green-600 uppercase tracking-wide mb-2">Request Details</p>
-                        <div className="grid grid-cols-2 gap-4 text-xs">
-                          <div>
-                            <span className="text-gray-600">Request ID:</span>
-                            <span className="font-mono ml-1">{result.requestId}</span>
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-green-700">{result.integrityIndex || 'N/A'}</div>
+                        <p className="text-xs font-medium text-green-600 uppercase tracking-wide">Integrity Index</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-white border-green-200">
+                      <CardContent className="p-4 text-center">
+                        <div className="text-2xl font-bold text-green-700">{result.accountTenure || 'N/A'}</div>
+                        <p className="text-xs font-medium text-green-600 uppercase tracking-wide">Account Tenure</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-white border-green-200">
+                      <CardContent className="p-4 text-center">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
+                          {result.sourceData?.accountStatus || 'N/A'}
+                        </span>
+                        <p className="text-xs font-medium text-green-600 uppercase tracking-wide mt-2">Status</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="bg-white border-green-200">
+                      <CardContent className="p-4 text-center">
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${result.isTerminated ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                          {result.isTerminated ? 'Terminated' : 'Active'}
+                        </span>
+                        <p className="text-xs font-medium text-green-600 uppercase tracking-wide mt-2">Account State</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Account Details */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <Card className="bg-white border-green-200">
+                      <CardContent className="p-4">
+                        <h4 className="text-sm font-semibold text-green-900 mb-3">Account Information</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Phone Number:</span>
+                            <span className="font-mono">{result.phoneNumber}</span>
                           </div>
-                          <div>
-                            <span className="text-gray-600">Timestamp:</span>
-                            <span className="ml-1">{result.timestamp}</span>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Account Type:</span>
+                            <span>{result.sourceData?.accountType || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Account Class:</span>
+                            <span>{result.sourceData?.accountClass || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Account User:</span>
+                            <span>{result.sourceData?.accountUser || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Activation Date:</span>
+                            <span>{result.sourceData?.activationDate || 'N/A'}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    <Card className="bg-white border-green-200">
+                      <CardContent className="p-4">
+                        <h4 className="text-sm font-semibold text-green-900 mb-3">Carrier Information</h4>
+                        <div className="space-y-2 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Carrier:</span>
+                            <span className="font-medium">{result.sourceData?.carrierName || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Brand:</span>
+                            <span>{result.sourceData?.brandName || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Device Make:</span>
+                            <span>{result.sourceData?.deviceMake || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">Device Model:</span>
+                            <span>{result.sourceData?.deviceModel || 'N/A'}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600">IMEI (Hash):</span>
+                            <span className="font-mono text-xs">{result.sourceData?.imei ? `${result.sourceData.imei.substring(0, 8)}...` : 'N/A'}</span>
                           </div>
                         </div>
                       </CardContent>
                     </Card>
                   </div>
+
+                  {/* Service Change Analytics */}
+                  {result.sourceData?.recentServiceChangeAge && (
+                    <Card className="bg-white border-green-200 mb-4">
+                      <CardContent className="p-4">
+                        <h4 className="text-sm font-semibold text-green-900 mb-3">Recent Service Changes (Age in Years)</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs">
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.deviceChangeAge}</div>
+                            <p className="text-gray-600">Device Change</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.simChangeAge}</div>
+                            <p className="text-gray-600">SIM Change</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.phoneNumberChangeAge}</div>
+                            <p className="text-gray-600">Number Change</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.accountChangeReactivationAge}</div>
+                            <p className="text-gray-600">Reactivation</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.accountChangeSuspensionAge}</div>
+                            <p className="text-gray-600">Suspension</p>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.accountChangeCancellationAge}</div>
+                            <p className="text-gray-600">Cancellation</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {/* Request Details */}
+                  <Card className="bg-white border-green-200">
+                    <CardContent className="p-4">
+                      <h4 className="text-sm font-semibold text-green-900 mb-3">Request Details</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div>
+                          <span className="text-gray-600">Request ID:</span>
+                          <span className="font-mono ml-1">{result.requestId}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Response Code:</span>
+                          <span className="font-mono ml-1">{result.responseCode}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-600">Timestamp:</span>
+                          <span className="ml-1">{result.timestamp}</span>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
             </div>
