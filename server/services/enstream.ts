@@ -7,8 +7,8 @@ interface AccountStatusResponse {
   accountStatus?: AccountStatus;
 }
 
-const BASE_URL = "https://qa.enstreamidentity.com/api/rest/service/v1";
-const PATH = "/accountStatus";
+const BASE_URL = "https://qa.enstreamidentity.com/api/rest/service/v2";
+const PATH = "/accountIntegrityIndex";
 
 export async function getAccountStatusByMsisdn(params: {
   msisdn: string; // E.164 format, e.g. "+14161234567"
