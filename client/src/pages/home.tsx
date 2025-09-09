@@ -512,7 +512,7 @@ export default function Home() {
                   <div className="flex">
                     <span className="text-muted-foreground w-20">URL:</span>
                     <code className="text-xs bg-muted px-2 py-1 rounded font-mono">
-                      /api/rest/service/v1/accountStatus
+                      /api/rest/service/v2/accountIntegrityIndex
                     </code>
                   </div>
                   <div className="flex">
@@ -522,19 +522,19 @@ export default function Home() {
                 </div>
               </div>
               <div>
-                <h4 className="font-medium text-foreground mb-3">Response Codes</h4>
+                <h4 className="font-medium text-foreground mb-3">Response Information</h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex items-center">
                     <span className="inline-flex items-center w-6 h-6 bg-green-100 text-green-800 rounded-full text-xs font-bold justify-center mr-3">0</span>
-                    <span className="text-foreground">Account Found & Active</span>
+                    <span className="text-foreground">Account Found - Returns Integrity Report</span>
                   </div>
                   <div className="flex items-center">
                     <span className="inline-flex items-center w-6 h-6 bg-amber-100 text-amber-800 rounded-full text-xs font-bold justify-center mr-3">1</span>
                     <span className="text-foreground">Subscriber Not Found</span>
                   </div>
                   <div className="flex items-center">
-                    <span className="inline-flex items-center w-6 h-6 bg-red-100 text-red-800 rounded-full text-xs font-bold justify-center mr-3">×</span>
-                    <span className="text-foreground">Error or Special Condition</span>
+                    <span className="inline-flex items-center w-6 h-6 bg-blue-100 text-blue-800 rounded-full text-xs font-bold justify-center mr-3">i</span>
+                    <span className="text-foreground">Includes Integrity Index, Tenure & Service Analytics</span>
                   </div>
                 </div>
               </div>
@@ -570,8 +570,8 @@ export default function Home() {
                 {recentQueries.map((query) => (
                   <div key={query.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg" data-testid={`query-history-${query.id}`}>
                     <div className="flex items-center space-x-3">
-                      <span className={`inline-flex items-center w-8 h-8 rounded-full text-xs font-bold justify-center text-white ${getStatusColor(query.accountStatus, parseInt(query.responseCode || "0"))}`}>
-                        {getStatusIcon(query.accountStatus, parseInt(query.responseCode || "0"))}
+                      <span className={`inline-flex items-center w-8 h-8 rounded-full text-xs font-bold justify-center text-white ${getStatusColor(query.accountStatus || undefined, parseInt(query.responseCode || "0"))}`}>
+                        {getStatusIcon(query.accountStatus || undefined, parseInt(query.responseCode || "0"))}
                       </span>
                       <div>
                         <p className="font-mono text-sm text-foreground">{query.phoneNumber}</p>
@@ -581,7 +581,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(query.accountStatus, parseInt(query.responseCode || "0"))}`}>
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeColor(query.accountStatus || undefined, parseInt(query.responseCode || "0"))}`}>
                         {query.accountStatus || (parseInt(query.responseCode || "0") === 1 ? "NOT FOUND" : "ERROR")}
                       </span>
                       <Button
