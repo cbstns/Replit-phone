@@ -103,6 +103,39 @@ export default function Home() {
     return "bg-red-100 text-red-800";
   };
 
+  // Helper function to determine if account should show as problematic (red)
+  const isAccountProblematic = (result: AccountStatusResponse) => {
+    return result.sourceData?.accountStatus === "SUSPENDED" || result.isTerminated === true;
+  };
+
+  // Get theme colors based on account status
+  const getAccountTheme = (result: AccountStatusResponse) => {
+    if (isAccountProblematic(result)) {
+      return {
+        bgColor: "bg-red-50",
+        iconBg: "bg-red-500", 
+        textPrimary: "text-red-900",
+        textSecondary: "text-red-600",
+        cardBorder: "border-red-200",
+        badgeBg: "bg-red-100 text-red-800",
+        numberBg: "text-red-700"
+      };
+    } else {
+      return {
+        bgColor: "bg-green-50",
+        iconBg: "bg-green-500",
+        textPrimary: "text-green-900", 
+        textSecondary: "text-green-600",
+        cardBorder: "border-green-200",
+        badgeBg: "bg-green-100 text-green-800",
+        numberBg: "text-green-700"
+      };
+    }
+  };
+
+  // Get theme colors for successful results
+  const resultTheme = result && result.responseCode === 0 ? getAccountTheme(result) : null;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -255,55 +288,57 @@ export default function Home() {
           )}
 
           {/* Success Result */}
-          {result && result.responseCode === 0 && (
-            <div className="p-6 border-b border-border bg-green-50" data-testid="success-result">
+          {result && result.responseCode === 0 && resultTheme && (
+            <div className={`p-6 border-b border-border ${resultTheme.bgColor}`} data-testid="success-result">
               <div className="flex items-start space-x-4">
                 <div className="flex-shrink-0">
-                  <div className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                  <div className={`w-10 h-10 ${resultTheme.iconBg} rounded-full flex items-center justify-center`}>
                     <Check className="text-white w-5 h-5" />
                   </div>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-green-900 mb-4">Account Integrity Report</h3>
+                  <h3 className={`text-lg font-semibold ${resultTheme.textPrimary} mb-4`}>
+                    {isAccountProblematic(result) ? "Account Status Alert" : "Account Integrity Report"}
+                  </h3>
                   
                   {/* Key Metrics */}
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <Card className="bg-white border-green-200">
+                    <Card className={`bg-white ${resultTheme.cardBorder}`}>
                       <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-green-700">{result.integrityIndex || 'N/A'}</div>
-                        <p className="text-xs font-medium text-green-600 uppercase tracking-wide">Integrity Index</p>
+                        <div className={`text-2xl font-bold ${resultTheme.numberBg}`}>{result.integrityIndex || 'N/A'}</div>
+                        <p className={`text-xs font-medium ${resultTheme.textSecondary} uppercase tracking-wide`}>Integrity Index</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-white border-green-200">
+                    <Card className={`bg-white ${resultTheme.cardBorder}`}>
                       <CardContent className="p-4 text-center">
-                        <div className="text-2xl font-bold text-green-700">{result.accountTenure || 'N/A'}</div>
-                        <p className="text-xs font-medium text-green-600 uppercase tracking-wide">Account Tenure</p>
+                        <div className={`text-2xl font-bold ${resultTheme.numberBg}`}>{result.accountTenure || 'N/A'}</div>
+                        <p className={`text-xs font-medium ${resultTheme.textSecondary} uppercase tracking-wide`}>Account Tenure</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-white border-green-200">
+                    <Card className={`bg-white ${resultTheme.cardBorder}`}>
                       <CardContent className="p-4 text-center">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${resultTheme.badgeBg}`}>
+                          <span className={`w-1.5 h-1.5 ${resultTheme.iconBg} rounded-full mr-1.5`}></span>
                           {result.sourceData?.accountStatus || 'N/A'}
                         </span>
-                        <p className="text-xs font-medium text-green-600 uppercase tracking-wide mt-2">Status</p>
+                        <p className={`text-xs font-medium ${resultTheme.textSecondary} uppercase tracking-wide mt-2`}>Status</p>
                       </CardContent>
                     </Card>
-                    <Card className="bg-white border-green-200">
+                    <Card className={`bg-white ${resultTheme.cardBorder}`}>
                       <CardContent className="p-4 text-center">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${result.isTerminated ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}`}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${result.isTerminated ? 'bg-red-100 text-red-800' : resultTheme.badgeBg}`}>
                           {result.isTerminated ? 'Terminated' : 'Active'}
                         </span>
-                        <p className="text-xs font-medium text-green-600 uppercase tracking-wide mt-2">Account State</p>
+                        <p className={`text-xs font-medium ${resultTheme.textSecondary} uppercase tracking-wide mt-2`}>Account State</p>
                       </CardContent>
                     </Card>
                   </div>
 
                   {/* Account Details */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <Card className="bg-white border-green-200">
+                    <Card className={`bg-white ${resultTheme.cardBorder}`}>
                       <CardContent className="p-4">
-                        <h4 className="text-sm font-semibold text-green-900 mb-3">Account Information</h4>
+                        <h4 className={`text-sm font-semibold ${resultTheme.textPrimary} mb-3`}>Account Information</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Phone Number:</span>
@@ -329,9 +364,9 @@ export default function Home() {
                       </CardContent>
                     </Card>
 
-                    <Card className="bg-white border-green-200">
+                    <Card className={`bg-white ${resultTheme.cardBorder}`}>
                       <CardContent className="p-4">
-                        <h4 className="text-sm font-semibold text-green-900 mb-3">Carrier Information</h4>
+                        <h4 className={`text-sm font-semibold ${resultTheme.textPrimary} mb-3`}>Carrier Information</h4>
                         <div className="space-y-2 text-sm">
                           <div className="flex justify-between">
                             <span className="text-gray-600">Carrier:</span>
@@ -360,32 +395,32 @@ export default function Home() {
 
                   {/* Service Change Analytics */}
                   {result.sourceData?.recentServiceChangeAge && (
-                    <Card className="bg-white border-green-200 mb-4">
+                    <Card className={`bg-white ${resultTheme.cardBorder} mb-4`}>
                       <CardContent className="p-4">
-                        <h4 className="text-sm font-semibold text-green-900 mb-3">Recent Service Changes (Age in Years)</h4>
+                        <h4 className={`text-sm font-semibold ${resultTheme.textPrimary} mb-3`}>Recent Service Changes (Age in Years)</h4>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-xs">
                           <div className="text-center">
-                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.deviceChangeAge}</div>
+                            <div className={`text-lg font-bold ${resultTheme.numberBg}`}>{result.sourceData.recentServiceChangeAge.deviceChangeAge}</div>
                             <p className="text-gray-600">Device Change</p>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.simChangeAge}</div>
+                            <div className={`text-lg font-bold ${resultTheme.numberBg}`}>{result.sourceData.recentServiceChangeAge.simChangeAge}</div>
                             <p className="text-gray-600">SIM Change</p>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.phoneNumberChangeAge}</div>
+                            <div className={`text-lg font-bold ${resultTheme.numberBg}`}>{result.sourceData.recentServiceChangeAge.phoneNumberChangeAge}</div>
                             <p className="text-gray-600">Number Change</p>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.accountChangeReactivationAge}</div>
+                            <div className={`text-lg font-bold ${resultTheme.numberBg}`}>{result.sourceData.recentServiceChangeAge.accountChangeReactivationAge}</div>
                             <p className="text-gray-600">Reactivation</p>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.accountChangeSuspensionAge}</div>
+                            <div className={`text-lg font-bold ${resultTheme.numberBg}`}>{result.sourceData.recentServiceChangeAge.accountChangeSuspensionAge}</div>
                             <p className="text-gray-600">Suspension</p>
                           </div>
                           <div className="text-center">
-                            <div className="text-lg font-bold text-green-700">{result.sourceData.recentServiceChangeAge.accountChangeCancellationAge}</div>
+                            <div className={`text-lg font-bold ${resultTheme.numberBg}`}>{result.sourceData.recentServiceChangeAge.accountChangeCancellationAge}</div>
                             <p className="text-gray-600">Cancellation</p>
                           </div>
                         </div>
@@ -394,9 +429,9 @@ export default function Home() {
                   )}
 
                   {/* Request Details */}
-                  <Card className="bg-white border-green-200">
+                  <Card className={`bg-white ${resultTheme.cardBorder}`}>
                     <CardContent className="p-4">
-                      <h4 className="text-sm font-semibold text-green-900 mb-3">Request Details</h4>
+                      <h4 className={`text-sm font-semibold ${resultTheme.textPrimary} mb-3`}>Request Details</h4>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
                         <div>
                           <span className="text-gray-600">Request ID:</span>
