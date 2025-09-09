@@ -52,7 +52,37 @@ export type PhoneQueryRequest = z.infer<typeof phoneQueryRequestSchema>;
 export interface AccountStatusResponse {
   responseCode: number;
   responseMessage?: string;
-  accountStatus?: "ACTIVE" | "SUSPENDED";
+  sourceData?: {
+    accountStatus: "ACTIVE" | "SUSPENDED";
+    accountType: "POSTPAID" | "PREPAID";
+    accountClass: "PERSONAL" | "BUSINESS";
+    accountUser: "PRIMARY" | "SECONDARY";
+    carrierName: string;
+    brandName: string;
+    activationDate: string;
+    imei: string;
+    deviceMake: string;
+    deviceModel: string;
+    recentServiceChangeAge: {
+      deviceChangeAge: number;
+      simChangeAge: number;
+      phoneNumberChangeAge: number;
+      accountChangeReactivationAge: number;
+      accountChangeSuspensionAge: number;
+      accountChangeCancellationAge: number;
+    };
+    recentServiceChangeFreq: {
+      accountChangeReactivationFreq: number;
+      accountChangeSuspensionFreq: number;
+      accountChangeCancellationFreq: number;
+      deviceChangeFreq: number;
+      simChangeFreq: number;
+      phoneNumberChangeFreq: number;
+    };
+  };
+  integrityIndex?: number;
+  accountTenure?: number;
+  isTerminated?: boolean;
   requestId?: string;
   phoneNumber?: string;
   timestamp?: string;

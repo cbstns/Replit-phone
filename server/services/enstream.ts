@@ -4,7 +4,37 @@ type AccountStatus = "ACTIVE" | "SUSPENDED";
 interface AccountStatusResponse {
   responseCode: number;
   responseMessage?: string;
-  accountStatus?: AccountStatus;
+  sourceData?: {
+    accountStatus: AccountStatus;
+    accountType: "POSTPAID" | "PREPAID";
+    accountClass: "PERSONAL" | "BUSINESS";
+    accountUser: "PRIMARY" | "SECONDARY";
+    carrierName: string;
+    brandName: string;
+    activationDate: string;
+    imei: string;
+    deviceMake: string;
+    deviceModel: string;
+    recentServiceChangeAge: {
+      deviceChangeAge: number;
+      simChangeAge: number;
+      phoneNumberChangeAge: number;
+      accountChangeReactivationAge: number;
+      accountChangeSuspensionAge: number;
+      accountChangeCancellationAge: number;
+    };
+    recentServiceChangeFreq: {
+      accountChangeReactivationFreq: number;
+      accountChangeSuspensionFreq: number;
+      accountChangeCancellationFreq: number;
+      deviceChangeFreq: number;
+      simChangeFreq: number;
+      phoneNumberChangeFreq: number;
+    };
+  };
+  integrityIndex?: number;
+  accountTenure?: number;
+  isTerminated?: boolean;
 }
 
 const BASE_URL = "https://qa.enstreamidentity.com/api/rest/service/v2";
@@ -28,7 +58,6 @@ export async function getAccountStatusByMsisdn(params: {
   const requestId = params.requestId ?? crypto.randomUUID();
 
   const auth = Buffer.from(`${username}:${password}`).toString("base64");
-  console.log(`Authentication - Username: ${username}, Auth header: Basic ${auth}`);
 
   const res = await fetch(`${BASE_URL}${PATH}`, {
     method: "POST",
