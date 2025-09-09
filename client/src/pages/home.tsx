@@ -7,14 +7,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem } from "@/components/ui/command";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { phoneQueryRequestSchema, type PhoneQueryRequest, type AccountStatusResponse, type PhoneQuery } from "@shared/schema";
-import { ChevronRight, Search, Check, AlertTriangle, HelpCircle, Phone, Settings, Clock, Book, LifeBuoy, RotateCcw, X } from "lucide-react";
+import { ChevronRight, Search, Check, AlertTriangle, HelpCircle, Phone, Settings, Clock, Book, LifeBuoy, RotateCcw, X, ChevronsUpDown } from "lucide-react";
 import { format } from "date-fns";
+
+// Popular test phone numbers for quick selection
+const TEST_PHONE_NUMBERS = [
+  "+12040000065", "+12040000101", "+12040000222", "+12040000252", "+12040000277", 
+  "+12040000393", "+12040000465", "+13060000047", "+13060000115", "+14030000018",
+  "+14030000036", "+14188888888", "+14199999999", "+14445556666", "+15060000002",
+  "+15555551111", "+15555552222", "+16470000000", "+17090000066", "+19050001761",
+  "+19050000001", "+19050000008", "+19050000009", "+19050000016", "+19050000023"
+];
 
 export default function Home() {
   const [showAdvanced, setShowAdvanced] = useState(false);
+  const [comboboxOpen, setComboboxOpen] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<PhoneQueryRequest>({
@@ -200,14 +213,58 @@ export default function Home() {
                   <Label htmlFor="phoneNumber" className="text-sm font-medium">
                     Phone Number (E.164 Format)
                   </Label>
-                  <Input
-                    id="phoneNumber"
-                    type="tel"
-                    placeholder="+1 (416) 555-0123"
-                    data-testid="input-phone-number"
-                    {...form.register("phoneNumber")}
-                    className="w-full"
-                  />
+                  <Popover open={comboboxOpen} onOpenChange={setComboboxOpen}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={comboboxOpen}
+                        className="w-full justify-between text-left font-normal"
+                        data-testid="input-phone-number"
+                      >
+                        {form.watch("phoneNumber") || "Type or select phone number..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[300px] p-0">
+                      <Command>
+                        <CommandInput 
+                          placeholder="Search or type phone number..." 
+                          value={form.watch("phoneNumber")}
+                          onValueChange={(value) => {
+                            form.setValue("phoneNumber", value);
+                            if (value && !TEST_PHONE_NUMBERS.includes(value)) {
+                              setComboboxOpen(false);
+                            }
+                          }}
+                        />
+                        <CommandEmpty>No test numbers found.</CommandEmpty>
+                        <CommandGroup>
+                          {TEST_PHONE_NUMBERS
+                            .filter(number => 
+                              number.toLowerCase().includes(form.watch("phoneNumber")?.toLowerCase() || "")
+                            )
+                            .map((number) => (
+                            <CommandItem
+                              key={number}
+                              value={number}
+                              onSelect={() => {
+                                form.setValue("phoneNumber", number);
+                                setComboboxOpen(false);
+                              }}
+                            >
+                              <Check
+                                className={`mr-2 h-4 w-4 ${
+                                  form.watch("phoneNumber") === number ? "opacity-100" : "opacity-0"
+                                }`}
+                              />
+                              {number}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
                   {form.formState.errors.phoneNumber && (
                     <p className="text-sm text-destructive">{form.formState.errors.phoneNumber.message}</p>
                   )}
